@@ -36,10 +36,16 @@ def chat_with_openai(user_input):
     add_message_to_array("user", user_input)
     print(f"Sending messages to OpenAI: {messages_array}")
 
+    # Reduce history size. Keep the first element as the system message and then the last 6 messages
+    if len(messages_array) > 7:
+        temp_messages_array = messages_array[:1] + messages_array[-6:]
+    else:
+        temp_messages_array = messages_array
+
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=messages_array,
+            messages=temp_messages_array,
         )
         print(f"Received response from OpenAI: {response}")
         response_message = response.choices[0].message.content

@@ -7,7 +7,7 @@ from interaction_system.interaction_history import add_interaction_to_history, g
 def main():
     furhat = FurhatRemoteAPI("localhost")
 
-    # Add 40 interactions to the history for testing purposes
+    # Add 40 interactions to the history for testing purposes - will be deleted
     for i in range(40):
         add_interaction_to_history({
             'emotion': 'sad',

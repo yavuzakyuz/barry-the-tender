@@ -15,6 +15,8 @@ def clear_interaction_history():
     interactionHistory.clear()
 
 def get_main_emotion():
+    if len(interactionHistory) < EMOTION_ESTIMATION_FRAME:
+        return None
     emotions = [interaction['emotion'] for interaction in interactionHistory[-EMOTION_ESTIMATION_FRAME:]]
     emotion = max(set(emotions), key=emotions.count)
     return emotion

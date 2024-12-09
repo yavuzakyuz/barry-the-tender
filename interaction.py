@@ -1,3 +1,5 @@
+from time import sleep
+
 import numpy as np
 from furhat_remote_api import FurhatRemoteAPI
 
@@ -8,16 +10,18 @@ from interaction_system.interaction_history import add_interaction_to_history, g
 def main_interaction():
     furhat = FurhatRemoteAPI("localhost")
 
+
     # Add 40 interactions to the history for testing purposes - will be deleted
-    for i in range(40):
-        add_interaction_to_history({
-            'emotion': 'happy',
-            'timestamp': '2021-10-10T10:00:00',
-        })
+    # for i in range(40):
+    #     add_interaction_to_history({
+    #         'emotion': 'happy',
+    #         'timestamp': '2021-10-10T10:00:00',
+    #     })
 
-    # Get the most frequent emotion in the last 10 interactions
+    while get_main_emotion() is None:
+        sleep(0.2)
+
     emotion = get_main_emotion()
-
     start_conversation(furhat, emotion)
     reset_neutral(furhat)
 

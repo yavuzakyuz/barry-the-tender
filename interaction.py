@@ -5,7 +5,7 @@ from interaction_system.chatgpt_functions import chat_with_openai
 from interaction_system.furhat_functions import start_conversation, reset_neutral
 from interaction_system.interaction_history import add_interaction_to_history, get_main_emotion
 
-def main():
+def main_interaction():
     furhat = FurhatRemoteAPI("localhost")
 
     # Add 40 interactions to the history for testing purposes - will be deleted
@@ -33,4 +33,5 @@ def main():
         response_text = chat_with_openai(user_message)
         furhat.say(text=response_text, blocking=True)
 
-main()
+if __name__ == "__main__":
+    main_interaction()

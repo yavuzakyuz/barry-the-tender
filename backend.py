@@ -1,9 +1,11 @@
 import cv2
-import opencv_jupyter_ui as jcv2
 import torch
 from feat import Detector
 from sklearn.svm import SVC
 import pickle
+import time
+
+from interaction_system.interaction_history import add_interaction_to_history, get_main_emotion
 
 emotion = {
     "angry": 0,
@@ -26,14 +28,22 @@ def emotion_detection():
         check, frame = cam.read()
         if not check:
             cam.release()
-            jcv2.destroyAllWindows()
             break
 
         new_frame, aus, em = feeling(frame, True, True)
-        print(em)
+        for n, emotion_person in enumerate(em):
+            print(f"Emotion of person {n}: {emotion_person}")
+            add_interaction_to_history({
+                'emotion': emotion_person,
+                'person': n,
+                'timestamp': time.time(),
+            })
+
+            # Tuple if you want to detect more people
+            # add_interaction_to_history((emotion_person, n))
+        print(get_main_emotion())
 
     cam.release()
-    jcv2.destroyAllWindows()
 
 
 def feeling(image, enable_aus=False, enable_emotion=False):

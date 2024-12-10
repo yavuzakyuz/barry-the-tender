@@ -9,7 +9,7 @@ from interaction_system.interaction_history import add_interaction_to_history, g
 
 def main_interaction():
     furhat = FurhatRemoteAPI("localhost")
-
+    furhat.say(text="Hello! I'm a bit busy with another client now! I'll see you in a sec, mate!", blocking=True)
 
     # Add 40 interactions to the history for testing purposes - will be deleted
     # for i in range(40):

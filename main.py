@@ -6,7 +6,7 @@ import atexit
 
 def main():
     t_interaction = threading.Thread(target=interaction.main_interaction)
-    t_backend = threading.Thread(target=backend.emotion)
+    t_backend = threading.Thread(target=backend.emotion_detection)
 
     t_backend.start()
     t_interaction.start()

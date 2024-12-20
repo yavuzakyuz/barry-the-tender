@@ -4,7 +4,7 @@ import numpy as np
 from furhat_remote_api import FurhatRemoteAPI
 
 from interaction_system.chatgpt_functions import chat_with_openai
-from interaction_system.furhat_functions import start_conversation, reset_neutral
+from interaction_system.furhat_functions import start_conversation, reset_neutral, react_to_emotion
 from interaction_system.interaction_history import add_interaction_to_history, get_main_emotion
 
 def main_interaction():
@@ -33,7 +33,7 @@ def main_interaction():
         print(f"Emotion: {emotion}")
         print(f"User message: {user_message}")
 
-        # TODO: Change the FurHat gesture somewhere here - I would say it should react to the user's emotion like happy-happy, sad-concerned, angry-surprised, etc
+        react_to_emotion(furhat, emotion)
 
         response_text = chat_with_openai(user_message)
         furhat.say(text=response_text, blocking=True)

@@ -27,3 +27,15 @@ def start_conversation(furhat, emotion):
 def reset_neutral(furhat):
     furhat.gesture(body=GESTURE_RESET_NEUTRAL)
     furhat.say_stop()
+
+def react_to_emotion(furhat, emotion):
+    if emotion == 'happy':
+        react_gesture = "BigSmile"
+    elif emotion == 'sad':
+        react_gesture = "BrowFrown"
+    elif emotion == 'angry':
+        react_gesture = "Surprised"
+    elif emotion == 'surprised':
+        react_gesture = "BrowRaise"
+
+    furhat.gesture(name=react_gesture)

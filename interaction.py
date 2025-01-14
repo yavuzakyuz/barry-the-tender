@@ -5,6 +5,7 @@ from furhat_remote_api import FurhatRemoteAPI
 
 from interaction_system.chatgpt_functions import chat_with_openai, decide_state_gpt
 from interaction_system.furhat_functions import start_conversation, reset_neutral
+from interaction_system.gestures import GESTURE_RESET_NEUTRAL
 from interaction_system.interaction_history import add_interaction_to_history, get_main_emotion
 
 class StateManager:
@@ -97,6 +98,9 @@ def menu_interaction(state_manager, furhat, emotion):
 
 def recommend_interaction(state_manager, furhat, emotion):
     print("COUNTER EQUALS  =" + str(state_manager.get_state_counter()))
+    next_state = state_manager.get_next_state()
+    next_state_intent = ''
+
     if state_manager.get_state_counter() == 0:
         furhat.say(text="Do you have any preference/allergies?", blocking=True)
         user_response = furhat.listen().message
@@ -108,21 +112,29 @@ def recommend_interaction(state_manager, furhat, emotion):
             state_manager.transition(next_state_intent)
             return gpt_response
         elif(emotion == "happy"):
-            furhat.gesture("Smile")
+            furhat.gesture(body=GESTURE_RESET_NEUTRAL)
             gpt_response = chat_with_openai(f"The user continued the conversation with this (review your past interaction here): '{user_response}'. "
             f" You need to recommend a drink to the user based on their preferences, and make a light-hearted joke while you're on it"
             f" gracefully move conversation to the '{next_state}'")
             next_state_intent = intent_grabber(user_response, state_manager.get_current_state())
             state_manager.transition(next_state_intent)
             return gpt_response
+        else:
+            gpt_response = chat_with_openai(
+                f"The user continued the conversation with this (review your past interaction here): '{user_response}'. "
+                f" You need to recommend a drink to the user based on their preferences and current emotional state (which you have), "
+                f" gracefully move conversation to the '{next_state}'")
+            next_state_intent = intent_grabber(user_response, state_manager.get_current_state())
+            state_manager.transition(next_state_intent)
+            return gpt_response
+
     else:
         user_response = furhat.listen().message
         next_state = state_manager.get_next_state()
         gpt_response = chat_with_openai(f"The user continued the conversation with this (review your past interaction here): '{user_response}'. "
         f" Now if you received an answer you need to move the conversation forward gracefully follow into the next section in conversation, "
         f" which is '{next_state}' Also notice and recommend based on user's emotional state (which you have)")
-        next_state_intent = intent_grabber(user_response, state_manager.get_current_state())
-        state_manager.transition(next_state_intent)
+        state_manager.transition(next_state)
         return gpt_response
     
     response = "Sorry, what was that again?"

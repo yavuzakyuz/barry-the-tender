@@ -35,22 +35,25 @@ detector = Detector(device='cuda' if torch.cuda.is_available() else 'cpu')
 
 def emotion_detection():
     cam = cv2.VideoCapture(0)
+    counter = 0
 
     while True:
         check, frame = cam.read()
         if not check:
             cam.release()
             break
-        
+            
         new_frame, aus, em = feeling(frame, True, True)
         for n, emotion_person in enumerate(em):
-            formatted_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            print(f"[{formatted_timestamp}] Emotion of person {n}: {emotion_person}")
+            if counter % 8 == 0:
+                formatted_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                print(f"[{formatted_timestamp}] Emotion of person {n}: {emotion_person}")
             add_interaction_to_history({
                 'emotion': emotion_person,
                 'person': n,
                 'timestamp': time.time(),
             })
+        counter += 1  
 
             # Tuple if you want to detect more people
             # add_interaction_to_history((emotion_person, n))

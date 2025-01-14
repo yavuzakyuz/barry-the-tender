@@ -45,7 +45,7 @@ class StateManager:
             return None
 
 def greeting_interaction(state_manager, furhat, emotion):
-    print("COUNTER EQUALS  =" + str(state_manager.get_state_counter()))
+    print("COUNTER " + "of intent " + state_manager.get_current_state() + " EQUALS  =" + str(state_manager.get_state_counter()))
     if state_manager.get_state_counter() == 0:
         furhat.say(text="sorry to keep you waiting, how can I help?", blocking=True)
    
@@ -151,7 +151,7 @@ def recommend_interaction(state_manager, furhat, emotion):
     return response
 
 def order_interaction(state_manager, furhat, emotion):
-    print("COUNTER EQUALS  =" + str(state_manager.get_state_counter()))
+    print("COUNTER " + "of intent " + state_manager.get_current_state() + " EQUALS  =" + str(state_manager.get_state_counter()))
     if state_manager.get_state_counter() == 0:
         furhat.say(text="Alright, let me write down the order.", blocking=True)
     else:

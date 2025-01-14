@@ -44,7 +44,7 @@ def chat_with_openai(user_input):
     user_input = f"[User feels: {user_emotion}] User message: {user_input}"
 
     add_message_to_array("user", user_input)
-    print(f"Sending messages to OpenAI: {messages_array}")
+    #print(f"Sending messages to OpenAI: {messages_array}")
 
     # Reduce history size. Keep the first element as the system message and then the last 6 messages
     if len(messages_array) > 7:
@@ -57,9 +57,10 @@ def chat_with_openai(user_input):
             model="gpt-4o-mini",
             messages=temp_messages_array,
         )
-        print(f"Received response from OpenAI: {response}")
+        #print(f"Received response from OpenAI: {response}")
         response_message = response.choices[0].message.content
         add_message_to_array("assistant", response_message)
+        print(f"GPT responded with: " + response_message.strip())
         return response_message.strip()
     except Exception as e:
         print(f"Error communicating with OpenAI: {e}")

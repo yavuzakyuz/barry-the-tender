@@ -66,7 +66,7 @@ def greeting_interaction(state_manager, furhat, emotion):
     return response
 
 def menu_interaction(state_manager, furhat, emotion):
-    print("COUNTER EQUALS  =" + str(state_manager.get_state_counter()))
+    print("COUNTER " + "of intent " + state_manager.get_current_state() + " EQUALS  =" + str(state_manager.get_state_counter()))
     if state_manager.get_state_counter() == 0:
         furhat.say(text="So we have vodka-cran, tequila-lime, jack and coke. What do you like? I can do a custom for you if you like?", blocking=True)
     else:
@@ -83,7 +83,7 @@ def menu_interaction(state_manager, furhat, emotion):
     print(f"User response in menu: {user_response}")
 
     next_state_intent = intent_grabber(user_response, state_manager.get_current_state())
-    print(f"Detected intent: {next_state_intent}")
+    
 
     response = "Sorry, what was that again?"
     if next_state_intent == "recommend":
@@ -114,7 +114,7 @@ def recommend_interaction(state_manager, furhat, emotion):
             state_manager.transition(next_state_intent)
             return gpt_response
         elif(emotion == "happy"):
-            furhat.gesture(body=GESTURE_RESET_NEUTRAL)
+            #furhat.gesture(body=GESTURE_RESET_NEUTRAL)
             gpt_response = chat_with_openai(f"The user continued the conversation with this (review your past interaction here): '{user_response}'. "
             f" You need to recommend a drink to the user based on their preferences, and make a light-hearted joke while you're on it DO NOT SAY SINCE YOU'RE FEELING BLABLA, JUST ACT ACCORDINGLY"
             f" gracefully move conversation to the '{next_state}'")
@@ -153,7 +153,7 @@ def recommend_interaction(state_manager, furhat, emotion):
 def order_interaction(state_manager, furhat, emotion):
     print("COUNTER EQUALS  =" + str(state_manager.get_state_counter()))
     if state_manager.get_state_counter() == 0:
-        furhat.say(text="Alright, let's take your order. What do you want?", blocking=True)
+        furhat.say(text="Alright, let me write down the order.", blocking=True)
     else:
         user_response = furhat.listen().message
         next_state = state_manager.get_next_state()
@@ -184,15 +184,26 @@ def order_interaction(state_manager, furhat, emotion):
     return response
 
 def intent_grabber(user_response, current_state):
-    print("Intent grabber trying with: " + user_response + "\n")
+    print("Intent grabber trying with user response: " + user_response + "\n")
     if("menu" in user_response.lower()):
+        print(f"Detected intent: menu. Moving: " + current_state + " -> " + "menu")
         return "menu"
     elif("recommend" in user_response.lower()):
+        print(f"Detected intent: recommend. Moving: " + current_state + " -> " + "recommend")
         return "recommend"
     elif("order" in user_response.lower()): 
+        print(f"Detected intent: order. Moving: " + current_state + " -> " + "order")
         return "order"
     else:
-        return decide_state_gpt(user_response, current_state)
+        interpreted_next_state = decide_state_gpt(user_response, current_state)
+        print(f"GPT Detected intent: {interpreted_next_state}. Moving: " + current_state + " -> " + interpreted_next_state)
+        return interpreted_next_state
+
+
+def script_interaction(state_manager, furhat, emotion, user_input):
+    gpt_response = chat_with_openai(user_input)
+    return gpt_response
+
 
 def main_interaction():
     furhat = FurhatRemoteAPI("localhost")
@@ -223,6 +234,10 @@ def main_interaction():
         #print(f"User message: {user_message}")
 
         # TODO: Change the FurHat gesture somewhere here - I would say it should react to the user's emotion like happy-happy, sad-concerned, angry-surprised, etc
+        
+        # user_input = furhat.listen().message
+        # response = script_interaction(state_manager, furhat, emotion, user_input)
+        # furhat.say(text=response, blocking=True)
 
         if current_state == "greeting":
              furhat.say(text=greeting_interaction(state_manager, furhat, emotion), blocking=True)

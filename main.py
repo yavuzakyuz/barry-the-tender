@@ -1,8 +1,6 @@
 import threading
 import backend
 import interaction
-import atexit
-
 
 def main():
     t_interaction = threading.Thread(target=interaction.main_interaction)
@@ -17,4 +15,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -154,6 +154,7 @@ def main_interaction():
     #     add_interaction_to_history({
     #         'emotion': 'happy',
     #         'timestamp': '2021-10-10T10:00:00',
+    #         'person': 0,
     #     })
 
     while get_main_emotion() is None:

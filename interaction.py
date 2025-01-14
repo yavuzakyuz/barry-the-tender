@@ -45,7 +45,9 @@ class StateManager:
             return None
 
 def greeting_interaction(state_manager, furhat, emotion):
-    furhat.say(text="sorry to keep you waiting, how can I help?", blocking=True)
+    print("COUNTER EQUALS  =" + str(state_manager.get_state_counter()))
+    if state_manager.get_state_counter() == 0:
+        furhat.say(text="sorry to keep you waiting, how can I help?", blocking=True)
    
     next_state_intent = intent_grabber(furhat.listen().message, state_manager.get_current_state()) 
     while not next_state_intent:
@@ -107,14 +109,14 @@ def recommend_interaction(state_manager, furhat, emotion):
         if(emotion == "neutral"): 
             gpt_response = chat_with_openai(f"The user continued the conversation with this (review your past interaction here): '{user_response}'. "
             f" You need to recommend a drink to the user based on their preferences and current emotional state (which you have), "
-            f" gracefully move conversation to the '{next_state}'")
+            f" gracefully move conversation to the '{next_state}' DO NOT SAY SINCE YOU'RE FEELING BLABLA, JUST ACT ACCORDINGLY")
             next_state_intent = intent_grabber(user_response, state_manager.get_current_state())
             state_manager.transition(next_state_intent)
             return gpt_response
         elif(emotion == "happy"):
             furhat.gesture(body=GESTURE_RESET_NEUTRAL)
             gpt_response = chat_with_openai(f"The user continued the conversation with this (review your past interaction here): '{user_response}'. "
-            f" You need to recommend a drink to the user based on their preferences, and make a light-hearted joke while you're on it"
+            f" You need to recommend a drink to the user based on their preferences, and make a light-hearted joke while you're on it DO NOT SAY SINCE YOU'RE FEELING BLABLA, JUST ACT ACCORDINGLY"
             f" gracefully move conversation to the '{next_state}'")
             next_state_intent = intent_grabber(user_response, state_manager.get_current_state())
             state_manager.transition(next_state_intent)
@@ -123,7 +125,7 @@ def recommend_interaction(state_manager, furhat, emotion):
             gpt_response = chat_with_openai(
                 f"The user continued the conversation with this (review your past interaction here): '{user_response}'. "
                 f" You need to recommend a drink to the user based on their preferences and current emotional state (which you have), "
-                f" gracefully move conversation to the '{next_state}'")
+                f" gracefully move conversation to the '{next_state}' DO NOT SAY SINCE YOU'RE FEELING BLABLA, JUST ACT ACCORDINGLY")
             next_state_intent = intent_grabber(user_response, state_manager.get_current_state())
             state_manager.transition(next_state_intent)
             return gpt_response
@@ -133,7 +135,8 @@ def recommend_interaction(state_manager, furhat, emotion):
         next_state = state_manager.get_next_state()
         gpt_response = chat_with_openai(f"The user continued the conversation with this (review your past interaction here): '{user_response}'. "
         f" Now if you received an answer you need to move the conversation forward gracefully follow into the next section in conversation, "
-        f" which is '{next_state}' Also notice and recommend based on user's emotional state (which you have)")
+        f" which is '{next_state}' Also notice and recommend based on user's emotional state (which you have) DO NOT SAY SINCE YOU'RE FEELING BLABLA, JUST ACT ACCORDINGLY")
+        print("next state: " + next_state)
         state_manager.transition(next_state)
         return gpt_response
     
@@ -147,12 +150,47 @@ def recommend_interaction(state_manager, furhat, emotion):
     state_manager.transition(next_state_intent)
     return response
 
+def order_interaction(state_manager, furhat, emotion):
+    print("COUNTER EQUALS  =" + str(state_manager.get_state_counter()))
+    if state_manager.get_state_counter() == 0:
+        furhat.say(text="Alright, let's take your order. What do you want?", blocking=True)
+    else:
+        user_response = furhat.listen().message
+        next_state = state_manager.get_next_state()
+        gpt_response = chat_with_openai(f"The user continued the conversation with this (review your past interaction here): '{user_response}'. "
+        f" Now if you received an answer you need to move the conversation forward gracefully follow into the next section in conversation, "
+        f" which is '{next_state}' ")
+        next_state_intent = intent_grabber(user_response, state_manager.get_current_state())
+        state_manager.transition(next_state_intent)
+        return gpt_response
+    
+    user_response = furhat.listen().message
+    print(f"User response in menu: {user_response}")
+
+    next_state_intent = intent_grabber(user_response, state_manager.get_current_state())
+    print(f"Detected intent: {next_state_intent}")
+
+    response = "Sorry, what was that again?"
+    if next_state_intent == "recommend":
+        response = "Okay, let me think of something."
+        state_manager.transition("recommend")
+    elif next_state_intent == "order":
+        response = "Okay, let's take the orders!"
+        state_manager.transition("order")
+    else:
+        response = "Sorry, you were saying?"
+
+    state_manager.transition(next_state_intent)
+    return response
+
 def intent_grabber(user_response, current_state):
     print("Intent grabber trying with: " + user_response + "\n")
     if("menu" in user_response.lower()):
         return "menu"
     elif("recommend" in user_response.lower()):
         return "recommend"
+    elif("order" in user_response.lower()): 
+        return "order"
     else:
         return decide_state_gpt(user_response, current_state)
 
@@ -194,6 +232,9 @@ def main_interaction():
 
         elif current_state == "recommend":
              furhat.say(text=recommend_interaction(state_manager, furhat, emotion), blocking=True)
+        
+        elif current_state == "order":
+             furhat.say(text=order_interaction(state_manager, furhat, emotion), blocking=True)
 
 if __name__ == "__main__":
     main_interaction()

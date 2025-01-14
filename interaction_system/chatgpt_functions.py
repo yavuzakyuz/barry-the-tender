@@ -66,7 +66,7 @@ def decide_state_gpt(user_input, current_state):
         "- If it doesn't change the current context DO NOT FORGET, YOU'RE GUESSING WHAT THE ROBOT WILL SAY NEXT, IF USER ASKS/WANTS MENU THEN YOU HAVE TO MOVE ON TO MENU CONTEXT, RIGHT?\n"
         f"Current state: {current_state}"
         f"User message: {user_input}"
-        "YOU CAN ONLY GIVE ONE OF THESE: [greeting, menu, recommendation]"
+        "YOU CAN ONLY GIVE ONE OF THESE: [greeting, menu, recommendation, order, bye]"
     )
 
     try:

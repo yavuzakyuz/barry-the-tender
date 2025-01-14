@@ -4,6 +4,17 @@ from feat import Detector
 from sklearn.svm import SVC
 import pickle
 import time
+import logging
+import warnings 
+
+logging.getLogger('cv2').setLevel(logging.ERROR)
+logging.getLogger('torch').setLevel(logging.ERROR)
+logging.getLogger().setLevel(logging.ERROR)
+logging.getLogger('feat').setLevel(logging.ERROR)
+logging.getLogger('torch').setLevel(logging.ERROR)
+
+# Suppress warnings
+warnings.filterwarnings("ignore")
 
 from interaction_system.interaction_history import add_interaction_to_history, get_main_emotion
 

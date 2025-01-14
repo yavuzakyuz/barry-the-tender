@@ -54,3 +54,29 @@ def chat_with_openai(user_input):
     except Exception as e:
         print(f"Error communicating with OpenAI: {e}")
         return "Sorry, I couldn't process your request."
+
+
+def decide_state_gpt(user_input, current_state):
+    client = OpenAI()
+    prompt = (
+        "You are an intent classifier for a bartender. I'll send you both the current context with a keyword like 'greet', 'menu', 'recommend' etc. Based on the following user message, and this state "
+        "determine the appropriate NEXT context BE FAST:\n"
+        "- If the message is about the drink menu, respond with 'menu'.\n"
+        "- If it's about drink recommendations, respond with 'recommend'.\n"
+        "- If it doesn't change the current context DO NOT FORGET, YOU'RE GUESSING WHAT THE ROBOT WILL SAY NEXT, IF USER ASKS/WANTS MENU THEN YOU HAVE TO MOVE ON TO MENU CONTEXT, RIGHT?\n"
+        f"Current state: {current_state}"
+        f"User message: {user_input}"
+        "YOU CAN ONLY GIVE ONE OF THESE: [greeting, menu, recommendation]"
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "system", "content": prompt}],
+        )
+        intent = response.choices[0].message.content.strip()
+        print(f"Intent detected: {intent}")
+        return intent
+    except Exception as e:
+        print(f"Error determining intent with GPT: {e}")
+        return current_state  

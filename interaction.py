@@ -17,10 +17,10 @@ class StateManager:
             cls._instance = super(StateManager, cls).__new__(cls)
             cls._instance.current_state = "greeting"
             cls._instance.state_counters = {}
-            cls._instance.state_flow = ["greeting", "menu", "recommend", "order", "bye"]
+            cls._instance.state_flow = ["greeting", "menu", "recommend", "order", "bye"] # define the basic flows
         return cls._instance
 
-    def transition(self, new_state):
+    def transition(self, new_state): # recorded state counters for each stage to restrict the number of times GPT can "chit-chat" i.e. stay on the same state without moving forward 
         if new_state not in self.state_counters:
             self.state_counters[new_state] = 0
         elif new_state == self.current_state:
@@ -44,6 +44,11 @@ class StateManager:
         except (ValueError, IndexError):
             return None
 
+
+    #######################################
+    ####### Greeting Interaction ##########
+    #######################################
+
 def greeting_interaction(state_manager, furhat, emotion):
     print("COUNTER " + "of intent " + state_manager.get_current_state() + " EQUALS  =" + str(state_manager.get_state_counter()))
     if state_manager.get_state_counter() == 0:
@@ -64,6 +69,10 @@ def greeting_interaction(state_manager, furhat, emotion):
     
     state_manager.transition(next_state_intent)
     return response
+
+    ###################################
+    ####### Menu Interaction ##########
+    ###################################
 
 def menu_interaction(state_manager, furhat, emotion):
     print("COUNTER " + "of intent " + state_manager.get_current_state() + " EQUALS  =" + str(state_manager.get_state_counter()))
@@ -97,6 +106,10 @@ def menu_interaction(state_manager, furhat, emotion):
 
     state_manager.transition(next_state_intent)
     return response
+
+    ########################################
+    ####### Recommend Interaction ##########
+    ########################################
 
 def recommend_interaction(state_manager, furhat, emotion):
     print("COUNTER EQUALS  =" + str(state_manager.get_state_counter()))
@@ -150,6 +163,10 @@ def recommend_interaction(state_manager, furhat, emotion):
     state_manager.transition(next_state_intent)
     return response
 
+    #################################
+    ####### Order Interaction #######
+    #################################
+
 def order_interaction(state_manager, furhat, emotion):
     print("COUNTER " + "of intent " + state_manager.get_current_state() + " EQUALS  =" + str(state_manager.get_state_counter()))
     if state_manager.get_state_counter() == 0:
@@ -183,6 +200,10 @@ def order_interaction(state_manager, furhat, emotion):
     state_manager.transition(next_state_intent)
     return response
 
+    #################################
+    ####### Intent Grabber ##########
+    #################################
+
 def intent_grabber(user_response, current_state):
     print("Intent grabber trying with user response: " + user_response + "\n")
     if("menu" in user_response.lower()):
@@ -196,7 +217,7 @@ def intent_grabber(user_response, current_state):
         return "order"
     else:
         interpreted_next_state = decide_state_gpt(user_response, current_state)
-        print(f"GPT Detected intent: {interpreted_next_state}. Moving: " + current_state + " -> " + interpreted_next_state)
+        print(f"GPT Detected intent: {interpreted_next_state}. Moving: " + current_state + " -> " + interpreted_next_state) # fallback to GPT for intent recoginition 
         return interpreted_next_state
 
 
@@ -229,11 +250,6 @@ def main_interaction():
         current_state = state_manager.get_current_state()
         emotion = get_main_emotion()
         response = "could you repeat that?"
-
-        #print(f"Emotion: {emotion}")
-        #print(f"User message: {user_message}")
-
-        # TODO: Change the FurHat gesture somewhere here - I would say it should react to the user's emotion like happy-happy, sad-concerned, angry-surprised, etc
         
         # user_input = furhat.listen().message
         # response = script_interaction(state_manager, furhat, emotion, user_input)
